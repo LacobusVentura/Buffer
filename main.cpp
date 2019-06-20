@@ -5,35 +5,27 @@
 #include <cstdio>
 #include <ctime>
 
-#include "Buffer.hxx"
+#include "Buffer.hpp"
 
 int main( void )
 {
-	Buffer buf;
-	Buffer aux("1234567890");
+	std::vector<unsigned char> v;
 
-	buf.append('A');
-	buf.append('B');
-	buf.append('C');
-	buf.append('\0');
-	buf.append('\t');
-	buf.append('\r');
-	buf.append('\n');
-	buf.append('\f');
-	buf.append("Palavra");
-	buf.append(std::string("string"));
-	buf.append((const unsigned char*)"1qaz2w\x0\x0\x0sx3edc4rfv", 16 );
+	std::srand(std::time(NULL));
 
-	buf.append( aux );
+	for( int i = 0; i < 128; i++ )
+		v.push_back( std::rand() % 256 );
 
-	std::cout << buf.hex() << std::endl;
-	std::cout << buf.ascii() << std::endl;
-	std::cout << buf.dump() << std::endl;
-	std::cout << aux.base64() << std::endl;
-	std::cout << buf.length() << std::endl;
+	Buffer buf( reinterpret_cast<const unsigned char*>(&v[0]), v.size() );
 
+	Buffer buf2( buf );
 
-	std::cout << buf;
+	Buffer b;
+
+	b = buf2;
+
+	std::cout << b << std::endl;
+	std::cout << buf << std::endl;
 
 	return 0;
 }

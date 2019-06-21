@@ -58,11 +58,14 @@ class Buffer
 		const unsigned char * buffer( void ) const;
 
 		std::string ascii( void ) const;
+		std::string base2( void ) const;
 		std::string hex( void ) const;
 		std::string base64( void ) const;
+		std::string dump( void ) const;
 		std::string dump( unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
 		void ascii( std::ostream &os ) const;
+		void base2( std::ostream &os ) const;
 		void hex( std::ostream &os ) const;
 		void base64( std::ostream &os ) const;
 		void dump( std::ostream &os, unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;

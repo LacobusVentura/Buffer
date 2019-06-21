@@ -7,6 +7,7 @@
 #include <ostream>
 #include <sstream>
 #include <iterator>
+#include <bitset>
 
 #include "Buffer.hpp"
 
@@ -207,6 +208,13 @@ void Buffer::ascii( std::ostream &os ) const
 }
 
 
+void Buffer::base2( std::ostream &os ) const
+{
+	for( unsigned long i = 0; i < m_buffer.size(); i++ )
+		os << std::bitset<8>(m_buffer[i]).to_string();
+}
+
+
 void Buffer::hex( std::ostream &os ) const
 {
 	for( unsigned long i = 0; i < m_buffer.size(); i++ )
@@ -321,6 +329,14 @@ std::string Buffer::ascii( void ) const
 }
 
 
+std::string Buffer::base2( void ) const
+{
+	std::stringstream ss;
+	base2( ss );
+	return ss.str();
+}
+
+
 std::string Buffer::hex( void ) const
 {
 	std::stringstream ss;
@@ -333,6 +349,14 @@ std::string Buffer::base64( void ) const
 {
 	std::stringstream ss;
 	base64( ss );
+	return ss.str();
+}
+
+
+std::string Buffer::dump( void ) const
+{
+	std::stringstream ss;
+	dump( ss, 16, 2, false );
 	return ss.str();
 }
 

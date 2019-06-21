@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <ostream>
-#include <istream>
 
 class Buffer
 {
@@ -27,21 +26,31 @@ class Buffer
 		void assign( const unsigned char * buf, std::size_t len );
 		void assign( const Buffer& buf );
 
-		Buffer& operator=( const char* pstr );
-		Buffer& operator=( char c );
-		Buffer& operator=( const std::string& str );
-		Buffer& operator=( const Buffer& buf );
-
 		void append( const char* str );
 		void append( char c );
 		void append( const std::string& str );
 		void append( const unsigned char * buf, std::size_t len );
 		void append( const Buffer& buf );
 
+		Buffer& operator=( const char* pstr );
+		Buffer& operator=( char c );
+		Buffer& operator=( const std::string& str );
+		Buffer& operator=( const Buffer& buf );
+
 		Buffer& operator+=( const char* pstr );
 		Buffer& operator+=( char c );
 		Buffer& operator+=( const Buffer& buf );
 		Buffer& operator+=( const std::string& str );
+
+		unsigned char& operator[]( unsigned long index );
+		const unsigned char& operator[]( unsigned long index ) const;
+
+		Buffer operator+(const Buffer& buf) const;
+
+		bool operator==( const Buffer& buf ) const;
+		bool operator!=( const Buffer& buf ) const;
+
+		bool equal( const Buffer& buf ) const;
 
 		Buffer sub( std::size_t start, std::size_t len );
 
@@ -51,16 +60,16 @@ class Buffer
 		std::string ascii( void ) const;
 		std::string hex( void ) const;
 		std::string base64( void ) const;
-		std::string dump( void ) const;
+		std::string dump( unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
 		void ascii( std::ostream &os ) const;
 		void hex( std::ostream &os ) const;
 		void base64( std::ostream &os ) const;
-		void dump( std::ostream &os ) const;
+		void dump( std::ostream &os, unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
-		void save_file( std::string filename ) const;
-		void load_file( std::string filename );
-		void append_file( std::string filename );
+		void save_file( const std::string& filename ) const;
+		void load_file( const std::string& filename, bool append = false );
+		void append_file( const std::string& filename );
 
 	private:
 		std::vector<unsigned char> m_buffer;

@@ -55,7 +55,7 @@ Buffer::~Buffer( void )
 
 void Buffer::swap( Buffer& buf ) throw()
 {
-	std::swap( this->m_buffer, buf.m_buffer );
+	std::swap( m_buffer, buf.m_buffer );
 }
 
 
@@ -89,28 +89,28 @@ Buffer & Buffer::operator=( const Buffer& buf )
 
 Buffer& Buffer::operator+=( const Buffer& buf )
 {
-	this->append(buf);
+	append(buf);
 	return *this;
 }
 
 
 Buffer& Buffer::operator+=( const std::string& str )
 {
-	this->append(str);
+	append(str);
 	return *this;
 }
 
 
 Buffer& Buffer::operator+=( const char* pstr )
 {
-	this->append(pstr);
+	append(pstr);
 	return *this;
 }
 
 
 Buffer& Buffer::operator+=( char c )
 {
-	this->append(c);
+	append(c);
 	return *this;
 }
 
@@ -123,42 +123,38 @@ void Buffer::clear( void )
 
 void Buffer::assign( const char* pstr )
 {
-	m_buffer.clear();
-	append(pstr);
+	m_buffer.insert( m_buffer.end(), pstr, pstr + std::strlen(pstr) );
 }
 
 
 void Buffer::assign( char c )
 {
 	m_buffer.clear();
-	append(c);
+	m_buffer.push_back(c);
 }
 
 
 void Buffer::assign( const std::string& str )
 {
-	m_buffer.clear();
-	append(str);
+	m_buffer.insert( m_buffer.begin(), str.begin(), str.end() );
 }
 
 
 void Buffer::assign( const unsigned char * buf, std::size_t len )
 {
-	m_buffer.clear();
-	append( buf, len );
+	m_buffer.insert( m_buffer.begin(), buf, buf + len );
 }
 
 
 void Buffer::assign( const Buffer& buf )
 {
-	m_buffer = buf.m_buffer;
+	m_buffer.insert( m_buffer.begin(), buf.m_buffer.begin(), buf.m_buffer.end() );
 }
 
 
 void Buffer::append( const char * pstr )
 {
-	std::string s = pstr;
-	std::copy(s.begin(), s.end(), std::back_inserter(m_buffer));
+	m_buffer.insert( m_buffer.end(), pstr, pstr + std::strlen(pstr) );
 }
 
 
@@ -170,7 +166,7 @@ void Buffer::append( char c )
 
 void Buffer::append( const std::string& str )
 {
-	std::copy(str.begin(), str.end(), std::back_inserter(m_buffer));
+	m_buffer.insert( m_buffer.end(), str.begin(), str.end() );
 }
 
 
@@ -200,7 +196,7 @@ std::size_t Buffer::length( void ) const
 
 const unsigned char * Buffer::buffer( void ) const
 {
-	return reinterpret_cast<const unsigned char*>(&m_buffer[0]);
+	return &m_buffer[0];
 }
 
 
@@ -271,14 +267,10 @@ void Buffer::base64( std::ostream &os ) const
 }
 
 
-void Buffer::dump( std::ostream &os ) const
+void Buffer::dump( std::ostream &os, unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const
 {
 	unsigned long i = 0L;
 	unsigned long offset = 0L;
-
-	unsigned int bytes_per_line = 16;
-	unsigned int group_bytes = 2;
-	bool hex_upper = false;
 
 	if( hex_upper )
 		os << std::uppercase;
@@ -345,52 +337,86 @@ std::string Buffer::base64( void ) const
 }
 
 
-std::string Buffer::dump( void ) const
+std::string Buffer::dump( unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const
 {
 	std::stringstream ss;
-	dump( ss );
+	dump( ss, bytes_per_line, group_bytes, hex_upper );
 	return ss.str();
 }
 
 
-void Buffer::save_file( std::string filename ) const
+void Buffer::save_file( const std::string& filename ) const
 {
 	std::ofstream f;
-
 	f.open( filename.c_str(), std::ios::binary | std::ios::out );
-
-	f.write( reinterpret_cast<const char*>(&m_buffer[0]),
-	         m_buffer.size() );
-
+	f.write( reinterpret_cast<const char*>(&m_buffer[0]), m_buffer.size() );
 	f.close();
 }
 
 
-void Buffer::load_file( std::string filename )
+void Buffer::load_file( const std::string& filename, bool append )
 {
 	std::ifstream f;
-	std::streampos fsize;
 
 	f.open( filename.c_str(), std::ios::binary );
 
 	f.unsetf( std::ios::skipws );
 
-	f.seekg( 0, std::ios::end );
-	fsize = f.tellg();
-	f.seekg( 0, std::ios::beg );
+	if( append == false )
+		m_buffer.clear();
 
-	m_buffer.clear();
-	m_buffer.reserve( fsize );
-
-	m_buffer.insert( m_buffer.begin(),
+	m_buffer.insert( m_buffer.end(),
 	                 std::istream_iterator<unsigned char>(f),
-	                 std::istream_iterator<unsigned char>());
+	                 std::istream_iterator<unsigned char>() );
 }
 
 
+void Buffer::append_file( const std::string& filename )
+{
+	load_file( filename, true );
+}
+
+
+unsigned char& Buffer::operator[]( unsigned long index )
+{
+	return m_buffer[ index ];
+}
+
+
+const unsigned char& Buffer::operator[]( unsigned long index ) const
+{
+	return m_buffer[ index ];
+}
+
+
+bool Buffer::equal( const Buffer& buf ) const
+{
+	return( buf.m_buffer == m_buffer );
+}
+
+
+bool Buffer::operator==( const Buffer& buf ) const
+{
+	return( buf.m_buffer == m_buffer );
+}
+
+
+bool Buffer::operator!=( const Buffer& buf ) const
+{
+	return( buf.m_buffer != m_buffer );
+}
+
+
+Buffer Buffer::operator+(const Buffer& buf) const
+{
+	Buffer a(*this);
+	a.append(buf);
+	return a;
+}
+
 std::ostream& operator<<( std::ostream &os, const Buffer& buf )
 {
-	buf.dump( os );
+	buf.dump( os, 16, 2, false );
 	return os;
 }
 

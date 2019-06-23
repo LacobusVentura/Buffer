@@ -1,5 +1,31 @@
-#ifndef __CBUFFER_HXX__
-#define __CBUFFER_HXX__
+/*
+
+MIT License
+
+Copyright (c) 2019 Tiago Ventura
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
+#ifndef __CBUFFER_HPP__
+#define __CBUFFER_HPP__
 
 #include <string>
 #include <vector>
@@ -12,10 +38,10 @@ class Buffer
 	public:
 		Buffer( void );
 		Buffer( const Buffer& buf );
-		Buffer( const char * pstr );
+		Buffer( const char* pstr );
 		Buffer( char c );
 		Buffer( const std::string& str );
-		Buffer( const unsigned char * pbuf, std::size_t len );
+		Buffer( const unsigned char* pbuf, std::size_t len );
 		virtual ~Buffer( void );
 
 		void clear( void );
@@ -23,7 +49,7 @@ class Buffer
 		void assign( const char* str );
 		void assign( char c );
 		void assign( const std::string& str );
-		void assign( const unsigned char * buf, std::size_t len );
+		void assign( const unsigned char* buf, std::size_t len );
 		void assign( const Buffer& buf );
 
 		void append( const char* str );
@@ -47,10 +73,10 @@ class Buffer
 
 		Buffer operator+(const Buffer& buf) const;
 
-		bool operator==( const Buffer& buf ) const;
-		bool operator!=( const Buffer& buf ) const;
+		bool operator==( const Buffer& other ) const;
+		bool operator!=( const Buffer& other ) const;
 
-		bool equal( const Buffer& buf ) const;
+		bool equal( const Buffer& other ) const;
 
 		Buffer sub( std::size_t start, std::size_t len );
 

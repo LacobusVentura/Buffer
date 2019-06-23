@@ -210,9 +210,9 @@ void Buffer::ascii( std::ostream &os, bool full_decode ) const
 	if( full_decode )
 	{
 		static const char * decode[] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
-										 "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
-										 "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
-										 "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
+		                                 "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
+		                                 "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
+		                                 "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
 		for( i = 0; i < buflen; i++ )
 		{
 			if( std::isprint(m_buffer[i]) )

@@ -1,27 +1,25 @@
 /*
+	MIT License
 
-MIT License
+	Copyright (c) 2019 Tiago Ventura
 
-Copyright (c) 2019 Tiago Ventura
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 
 #include <iostream>
@@ -45,6 +43,12 @@ Buffer::Buffer( void ) :
 }
 
 
+Buffer::Buffer( std::size_t size ) :
+	m_buffer( size )
+{
+}
+
+
 Buffer::Buffer( const char * pstr ) :
 	m_buffer( pstr, pstr + std::strlen(pstr) )
 {
@@ -54,13 +58,6 @@ Buffer::Buffer( const char * pstr ) :
 Buffer::Buffer( const std::string& str ) :
 	m_buffer( str.begin(), str.end() )
 {
-}
-
-
-Buffer::Buffer( char c ) :
-	m_buffer()
-{
-	m_buffer.push_back(c);
 }
 
 
@@ -89,22 +86,19 @@ void Buffer::swap( Buffer& buf ) throw()
 
 Buffer& Buffer::operator=( const std::string& str )
 {
-	assign(str);
-	return *this;
+	return assign(str);
 }
 
 
 Buffer& Buffer::operator=( const char* pstr )
 {
-	assign(pstr);
-	return *this;
+	return assign(pstr);
 }
 
 
 Buffer& Buffer::operator=( char c )
 {
-	assign(c);
-	return *this;
+	return assign(c);
 }
 
 Buffer& Buffer::operator=( const Buffer& buf )
@@ -117,106 +111,176 @@ Buffer& Buffer::operator=( const Buffer& buf )
 
 Buffer& Buffer::operator+=( const Buffer& buf )
 {
-	append(buf);
-	return *this;
+	return append(buf);
 }
 
 
 Buffer& Buffer::operator+=( const std::string& str )
 {
-	append(str);
-	return *this;
+	return append(str);
 }
 
 
 Buffer& Buffer::operator+=( const char* pstr )
 {
-	append(pstr);
-	return *this;
+	return append(pstr);
 }
 
 
 Buffer& Buffer::operator+=( char c )
 {
-	append(c);
-	return *this;
+	return append(c);
 }
 
 
-void Buffer::clear( void )
+Buffer& Buffer::clear( void )
 {
 	m_buffer.clear();
+	return(*this);
 }
 
 
-void Buffer::assign( const char* pstr )
+Buffer& Buffer::resize( std::size_t n )
+{
+	m_buffer.resize( n );
+	return(*this);
+}
+
+
+Buffer& Buffer::assign( const char* pstr )
 {
 	m_buffer.insert( m_buffer.end(), pstr, pstr + std::strlen(pstr) );
+	return(*this);
 }
 
 
-void Buffer::assign( char c )
+Buffer& Buffer::assign( char c )
 {
 	m_buffer.clear();
 	m_buffer.push_back(c);
+	return(*this);
 }
 
 
-void Buffer::assign( const std::string& str )
+Buffer& Buffer::assign( const std::string& str )
 {
 	m_buffer.insert( m_buffer.begin(), str.begin(), str.end() );
+	return(*this);
 }
 
 
-void Buffer::assign( const unsigned char * buf, std::size_t len )
+Buffer& Buffer::assign( const unsigned char * buf, std::size_t len )
 {
 	m_buffer.insert( m_buffer.begin(), buf, buf + len );
+	return(*this);
 }
 
 
-void Buffer::assign( const Buffer& buf )
+Buffer& Buffer::assign( const Buffer& buf )
 {
 	m_buffer.insert( m_buffer.begin(), buf.m_buffer.begin(), buf.m_buffer.end() );
+	return(*this);
 }
 
 
-void Buffer::append( const char * pstr )
+Buffer& Buffer::append( const char * pstr )
 {
 	m_buffer.insert( m_buffer.end(), pstr, pstr + std::strlen(pstr) );
+	return(*this);
 }
 
 
-void Buffer::append( char c )
+Buffer& Buffer::append( char c )
 {
 	m_buffer.push_back(c);
+	return(*this);
 }
 
 
-void Buffer::append( const std::string& str )
+Buffer& Buffer::append( const std::string& str )
 {
 	m_buffer.insert( m_buffer.end(), str.begin(), str.end() );
+	return(*this);
 }
 
 
-void Buffer::append( const unsigned char * buf, std::size_t len )
+Buffer& Buffer::append( const unsigned char * buf, std::size_t len )
 {
 	m_buffer.insert( m_buffer.end(), buf, buf + len );
+	return(*this);
 }
 
 
-void Buffer::append( const Buffer& buf )
+Buffer& Buffer::append( const Buffer& buf )
 {
 	m_buffer.insert( m_buffer.end(), buf.m_buffer.begin(), buf.m_buffer.end() );
+	return(*this);
 }
 
 
-Buffer Buffer::sub( std::size_t start, std::size_t len )
+Buffer& Buffer::insert( std::size_t pos, const char* pstr )
 {
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	m_buffer.insert( m_buffer.begin() + pos, pstr, pstr + std::strlen(pstr) );
+	return(*this);
+}
+
+
+Buffer& Buffer::insert( std::size_t pos, char c )
+{
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	m_buffer.insert( m_buffer.begin() + pos, 1, c );
+	return(*this);
+}
+
+
+Buffer& Buffer::insert( std::size_t pos, const std::string& str )
+{
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	m_buffer.insert( m_buffer.begin() + pos, str.begin(), str.end() );
+	return(*this);
+}
+
+
+Buffer& Buffer::insert( std::size_t pos, const unsigned char * buf, std::size_t len )
+{
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	m_buffer.insert( m_buffer.begin() + pos, buf, buf + len );
+	return(*this);
+}
+
+
+Buffer& Buffer::insert( std::size_t pos, const Buffer& buf )
+{
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	m_buffer.insert( m_buffer.begin() + pos, buf.m_buffer.begin(), buf.m_buffer.end() );
+	return(*this);
+}
+
+
+Buffer Buffer::sub( std::size_t start, std::size_t len ) const
+{
+	if( start >= m_buffer.size() )
+		throw std::out_of_range("start position out of range");
+
+	if( start + len > m_buffer.size() )
+		throw std::out_of_range("sub buffer out of range");
+
 	return Buffer( &m_buffer[start], len );
 }
 
 
-std::size_t Buffer::length( void ) const
+std::size_t Buffer::size( void ) const
 {
 	return m_buffer.size();
 }
@@ -235,10 +299,10 @@ void Buffer::ascii( std::ostream &os, bool full_decode ) const
 
 	if( full_decode )
 	{
-		static const char * decode[] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
-		                                 "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
-		                                 "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
-		                                 "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
+		static const char * decode[32] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
+		                                   "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
+		                                   "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
+		                                   "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
 		for( i = 0; i < buflen; i++ )
 		{
 			if( std::isprint(m_buffer[i]) )
@@ -446,7 +510,6 @@ std::string Buffer::dump( unsigned int bytes_per_line, unsigned int group_bytes,
 	return ss.str();
 }
 
-
 void Buffer::save_file( const std::string& filename ) const
 {
 	std::ofstream f;
@@ -460,7 +523,7 @@ void Buffer::save_file( const std::string& filename ) const
 }
 
 
-void Buffer::load_file( const std::string& filename, bool append )
+Buffer& Buffer::load_file( const std::string& filename, bool append )
 {
 	std::ifstream f;
 
@@ -477,23 +540,31 @@ void Buffer::load_file( const std::string& filename, bool append )
 	m_buffer.insert( m_buffer.end(),
 	                 std::istream_iterator<unsigned char>(f),
 	                 std::istream_iterator<unsigned char>() );
+
+	return(*this);
 }
 
 
-void Buffer::append_file( const std::string& filename )
+Buffer& Buffer::append_file( const std::string& filename )
 {
-	load_file( filename, true );
+	return load_file( filename, true );
 }
 
 
 unsigned char& Buffer::operator[]( unsigned long index )
 {
+	if( index >= m_buffer.size() )
+		throw std::out_of_range("buffer index out of range");
+
 	return m_buffer[ index ];
 }
 
 
 const unsigned char& Buffer::operator[]( unsigned long index ) const
 {
+	if( index >= m_buffer.size() )
+		throw std::out_of_range("buffer index out of range");
+
 	return m_buffer[ index ];
 }
 
@@ -518,9 +589,9 @@ bool Buffer::operator!=( const Buffer& other ) const
 
 Buffer Buffer::operator+(const Buffer& buf) const
 {
-	Buffer a(*this);
-	a.append(buf);
-	return a;
+	Buffer aux(*this);
+	aux.append(buf);
+	return aux;
 }
 
 

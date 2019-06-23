@@ -1,27 +1,25 @@
 /*
+	MIT License
 
-MIT License
+	Copyright (c) 2019 Tiago Ventura
 
-Copyright (c) 2019 Tiago Ventura
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 
 #ifndef __CBUFFER_HPP__
@@ -37,26 +35,30 @@ class Buffer
 
 	public:
 		Buffer( void );
+		Buffer( std::size_t size );
 		Buffer( const Buffer& buf );
 		Buffer( const char* pstr );
-		Buffer( char c );
 		Buffer( const std::string& str );
 		Buffer( const unsigned char* pbuf, std::size_t len );
 		virtual ~Buffer( void );
 
-		void clear( void );
+		Buffer& assign( const char* str );
+		Buffer& assign( char c );
+		Buffer& assign( const std::string& str );
+		Buffer& assign( const unsigned char* buf, std::size_t len );
+		Buffer& assign( const Buffer& buf );
 
-		void assign( const char* str );
-		void assign( char c );
-		void assign( const std::string& str );
-		void assign( const unsigned char* buf, std::size_t len );
-		void assign( const Buffer& buf );
+		Buffer& append( const char* str );
+		Buffer& append( char c );
+		Buffer& append( const std::string& str );
+		Buffer& append( const unsigned char * buf, std::size_t len );
+		Buffer& append( const Buffer& buf );
 
-		void append( const char* str );
-		void append( char c );
-		void append( const std::string& str );
-		void append( const unsigned char * buf, std::size_t len );
-		void append( const Buffer& buf );
+		Buffer& insert( std::size_t pos, const char* str );
+		Buffer& insert( std::size_t pos, char c );
+		Buffer& insert( std::size_t pos, const std::string& str );
+		Buffer& insert( std::size_t pos, const unsigned char * buf, std::size_t len );
+		Buffer& insert( std::size_t pos, const Buffer& buf );
 
 		Buffer& operator=( const char* pstr );
 		Buffer& operator=( char c );
@@ -78,9 +80,10 @@ class Buffer
 
 		bool equal( const Buffer& other ) const;
 
-		Buffer sub( std::size_t start, std::size_t len );
-
-		std::size_t length( void ) const;
+		Buffer sub( std::size_t start, std::size_t len ) const;
+		Buffer& clear( void );
+		Buffer& resize( std::size_t len );
+		std::size_t size( void ) const;
 		const unsigned char * buffer( void ) const;
 
 		std::string base2( void ) const;
@@ -99,8 +102,8 @@ class Buffer
 		void dump( std::ostream &os, unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
 		void save_file( const std::string& filename ) const;
-		void load_file( const std::string& filename, bool append = false );
-		void append_file( const std::string& filename );
+		Buffer& load_file( const std::string& filename, bool append = false );
+		Buffer& append_file( const std::string& filename );
 
 	private:
 		std::vector<unsigned char> m_buffer;

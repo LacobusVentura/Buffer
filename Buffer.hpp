@@ -57,17 +57,19 @@ class Buffer
 		std::size_t length( void ) const;
 		const unsigned char * buffer( void ) const;
 
-		std::string ascii( void ) const;
 		std::string base2( void ) const;
 		std::string hex( void ) const;
 		std::string base64( void ) const;
+		std::string escape( void ) const;
+		std::string ascii( bool full_decode = true ) const;
 		std::string dump( void ) const;
 		std::string dump( unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
-		void ascii( std::ostream &os ) const;
 		void base2( std::ostream &os ) const;
 		void hex( std::ostream &os ) const;
 		void base64( std::ostream &os ) const;
+		void escape( std::ostream &os ) const;
+		void ascii( std::ostream &os, bool full_decode ) const;
 		void dump( std::ostream &os, unsigned int bytes_per_line, unsigned int group_bytes, bool hex_upper ) const;
 
 		void save_file( const std::string& filename ) const;

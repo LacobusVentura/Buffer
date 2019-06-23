@@ -4,13 +4,15 @@
 
 int main( void )
 {
-	Buffer b;
+	Buffer a, b;
 
-	b.load_file( "/etc/hostname" );
+	a.load_file( "/bin/bash" );
 
-	std::cout << b.base64() << std::endl;
-	std::cout << b.hex() << std::endl;
-	std::cout << b.base2() << std::endl;
+	b = a.sub( 1024, 256 );
+
+	std::cout << b.escape() << std::endl;
+	std::cout << b.ascii() << std::endl;
+	std::cout << b.ascii(false) << std::endl;
 	std::cout << b.dump() << std::endl;
 
 	return 0;

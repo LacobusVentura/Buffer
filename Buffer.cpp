@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iterator>
 #include <bitset>
+#include <stdexcept>
 
 #include "Buffer.hpp"
 
@@ -80,7 +81,7 @@ Buffer& Buffer::operator=( char c )
 	return *this;
 }
 
-Buffer & Buffer::operator=( const Buffer& buf )
+Buffer& Buffer::operator=( const Buffer& buf )
 {
 	Buffer tmp(buf);
 	tmp.swap(*this);
@@ -201,10 +202,53 @@ const unsigned char * Buffer::buffer( void ) const
 }
 
 
-void Buffer::ascii( std::ostream &os ) const
+void Buffer::ascii( std::ostream &os, bool full_decode ) const
 {
-	for( unsigned long i = 0; i < m_buffer.size(); i++ )
-		os << static_cast<char>( std::isprint(m_buffer[i]) ? m_buffer[i] : '.' );
+	std::size_t buflen = m_buffer.size();
+	unsigned long i = 0L;
+
+	if( full_decode )
+	{
+		static const char * decode[] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
+										 "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
+										 "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
+										 "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
+		for( i = 0; i < buflen; i++ )
+		{
+			if( std::isprint(m_buffer[i]) )
+				os << static_cast<char>(m_buffer[i]);
+			else if( m_buffer[i] < 32 )
+				os << '<' << decode[m_buffer[i]] << '>';
+			else if( m_buffer[i] == 127 )
+				os << "<DEL>";
+			else
+				os << "<0x"
+				   << std::setfill('0')
+				   << std::setw(2)
+				   << std::hex
+				   << static_cast<int>(m_buffer[i])
+				   <<  '>';
+		}
+	}
+	else
+	{
+		for( i = 0; i < buflen; i++ )
+			os << static_cast<char>( (std::isprint(m_buffer[i])) ? m_buffer[i] : '.' );
+	}
+}
+
+
+void Buffer::escape( std::ostream &os ) const
+{
+	unsigned long i = 0L;
+	std::size_t buflen = m_buffer.size();
+
+	for( i = 0; i < buflen; i++ )
+		os << "\\x"
+		   << std::setfill('0')
+		   << std::setw(2)
+		   << std::hex
+		   << static_cast<int>(m_buffer[i]);
 }
 
 
@@ -321,10 +365,18 @@ void Buffer::dump( std::ostream &os, unsigned int bytes_per_line, unsigned int g
 }
 
 
-std::string Buffer::ascii( void ) const
+std::string Buffer::ascii( bool full_decode ) const
 {
 	std::stringstream ss;
-	ascii( ss );
+	ascii( ss, full_decode );
+	return ss.str();
+}
+
+
+std::string Buffer::escape( void ) const
+{
+	std::stringstream ss;
+	escape( ss );
 	return ss.str();
 }
 
@@ -373,6 +425,10 @@ void Buffer::save_file( const std::string& filename ) const
 {
 	std::ofstream f;
 	f.open( filename.c_str(), std::ios::binary | std::ios::out );
+
+	if( !f.is_open() )
+		throw std::runtime_error("can't open file for writing");
+
 	f.write( reinterpret_cast<const char*>(&m_buffer[0]), m_buffer.size() );
 	f.close();
 }
@@ -383,6 +439,9 @@ void Buffer::load_file( const std::string& filename, bool append )
 	std::ifstream f;
 
 	f.open( filename.c_str(), std::ios::binary );
+
+	if( !f.is_open() )
+		throw std::runtime_error("can't open file for reading");
 
 	f.unsetf( std::ios::skipws );
 
@@ -437,6 +496,7 @@ Buffer Buffer::operator+(const Buffer& buf) const
 	a.append(buf);
 	return a;
 }
+
 
 std::ostream& operator<<( std::ostream &os, const Buffer& buf )
 {

@@ -101,6 +101,7 @@ Buffer& Buffer::operator=( char c )
 	return assign(c);
 }
 
+
 Buffer& Buffer::operator=( const Buffer& buf )
 {
 	Buffer tmp(buf);
@@ -303,6 +304,20 @@ Buffer& Buffer::insert( std::size_t pos, const Buffer& buf )
 }
 
 
+Buffer& Buffer::remove( std::size_t pos, std::size_t len )
+{
+	if( pos >= m_buffer.size() )
+		throw std::out_of_range("position out of range");
+
+	if( pos + len > m_buffer.size() )
+		throw std::out_of_range("buffer out of range");
+
+	m_buffer.erase( m_buffer.begin() + pos, m_buffer.begin() + pos + len );
+
+	return(*this);
+}
+
+
 Buffer Buffer::sub( std::size_t start, std::size_t len ) const
 {
 	if( start >= m_buffer.size() )
@@ -332,12 +347,13 @@ void Buffer::ascii( std::ostream &os, bool full_decode ) const
 	std::size_t buflen = m_buffer.size();
 	unsigned long i = 0L;
 
+	static const char * decode[32] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
+	                                   "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
+	                                   "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
+	                                   "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
+
 	if( full_decode )
 	{
-		static const char * decode[32] = { "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
-		                                   "BS", "HT", "LF", "VT","FF", "CR", "SO", "SI",
-		                                   "DLE","DCL","DC2","DC3","DC4","NAK","SYN","ETB",
-		                                   "CAN", "EM","SUB","ESC","FS", "GS", "RS", "US" };
 		for( i = 0; i < buflen; i++ )
 		{
 			if( std::isprint(m_buffer[i]) )

@@ -66,6 +66,8 @@ class Buffer
 		Buffer& insert( std::size_t pos, const unsigned char * buf, std::size_t len );
 		Buffer& insert( std::size_t pos, const Buffer& buf );
 
+		Buffer& remove( std::size_t pos, std::size_t len = 1 );
+
 		Buffer& operator=( const char* pstr );
 		Buffer& operator=( char c );
 		Buffer& operator=( const std::string& str );

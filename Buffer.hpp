@@ -48,6 +48,12 @@ class Buffer
 		Buffer& assign( const unsigned char* buf, std::size_t len );
 		Buffer& assign( const Buffer& buf );
 
+		Buffer& prepend( const char* str );
+		Buffer& prepend( char c );
+		Buffer& prepend( const std::string& str );
+		Buffer& prepend( const unsigned char * buf, std::size_t len );
+		Buffer& prepend( const Buffer& buf );
+
 		Buffer& append( const char* str );
 		Buffer& append( char c );
 		Buffer& append( const std::string& str );

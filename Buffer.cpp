@@ -183,6 +183,41 @@ Buffer& Buffer::assign( const Buffer& buf )
 }
 
 
+Buffer& Buffer::prepend( const char * pstr )
+{
+	m_buffer.insert( m_buffer.begin(), pstr, pstr + std::strlen(pstr) );
+	return(*this);
+}
+
+
+Buffer& Buffer::prepend( char c )
+{
+	m_buffer.insert( m_buffer.begin(), c );
+	return(*this);
+}
+
+
+Buffer& Buffer::prepend( const std::string& str )
+{
+	m_buffer.insert( m_buffer.begin(), str.begin(), str.end() );
+	return(*this);
+}
+
+
+Buffer& Buffer::prepend( const unsigned char * buf, std::size_t len )
+{
+	m_buffer.insert( m_buffer.begin(), buf, buf + len );
+	return(*this);
+}
+
+
+Buffer& Buffer::prepend( const Buffer& buf )
+{
+	m_buffer.insert( m_buffer.begin(), buf.m_buffer.begin(), buf.m_buffer.end() );
+	return(*this);
+}
+
+
 Buffer& Buffer::append( const char * pstr )
 {
 	m_buffer.insert( m_buffer.end(), pstr, pstr + std::strlen(pstr) );
@@ -192,7 +227,7 @@ Buffer& Buffer::append( const char * pstr )
 
 Buffer& Buffer::append( char c )
 {
-	m_buffer.push_back(c);
+	m_buffer.insert( m_buffer.end(), c );
 	return(*this);
 }
 
@@ -344,14 +379,20 @@ void Buffer::escape( std::ostream &os ) const
 
 void Buffer::base2( std::ostream &os ) const
 {
-	for( unsigned long i = 0; i < m_buffer.size(); i++ )
+	unsigned long i = 0L;
+	std::size_t buflen = m_buffer.size();
+
+	for( i = 0; i < buflen; i++ )
 		os << std::bitset<8>(m_buffer[i]).to_string();
 }
 
 
 void Buffer::hex( std::ostream &os ) const
 {
-	for( unsigned long i = 0; i < m_buffer.size(); i++ )
+	unsigned long i = 0L;
+	std::size_t buflen = m_buffer.size();
+
+	for( i = 0; i < buflen; i++ )
 		os << std::setfill('0')
 		   << std::setw(2)
 		   << std::hex
@@ -510,6 +551,7 @@ std::string Buffer::dump( unsigned int bytes_per_line, unsigned int group_bytes,
 	return ss.str();
 }
 
+
 void Buffer::save_file( const std::string& filename ) const
 {
 	std::ofstream f;
@@ -577,13 +619,13 @@ bool Buffer::equal( const Buffer& other ) const
 
 bool Buffer::operator==( const Buffer& other ) const
 {
-	return( other.m_buffer == m_buffer );
+	return equal( other );
 }
 
 
 bool Buffer::operator!=( const Buffer& other ) const
 {
-	return( other.m_buffer != m_buffer );
+	return !equal( other );
 }
 
 
